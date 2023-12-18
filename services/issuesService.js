@@ -11,7 +11,7 @@ async function syncIssuesWithLocalDB() {
       `https://api.github.com/repos/${repoOwner}/${repoName}/issues`,
       {
         headers: {
-          Authorization: "Bearer mytoken",
+          Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
         },
       }
     );

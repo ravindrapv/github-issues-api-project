@@ -1,52 +1,78 @@
-<!-- Test the Endpoints
-a. Sync API (POST /issues/sync)
-Create a New Request:
+# GitHub Issues Sync API
 
-Open Postman.
-Click on the "New" button to create a new request.
-Give your request a name, for example, "Sync GitHub Issues."
-Set Request Type and URL:
+This API allows you to synchronize GitHub issues with a local database and perform operations on those issues.
 
-Set the request type to POST.
-Enter the URL for your sync endpoint. For example: http://localhost:3000/issues/sync.
-Add Headers:
+## Table of Contents
 
-If you have any headers, such as Content-Type, you can add them here.
-Body:
+- [Sync GitHub Issues](#sync-github-issues)
+- [Get Issue by ID](#get-issue-by-id)
+- [Update Issue](#update-issue)
+- [Get Paginated Issues](#get-paginated-issues)
 
-If your sync endpoint requires a request body, switch to the "Body" tab.
-Enter the necessary data according to your API specifications.
-Send Request:
+## Sync GitHub Issues
 
-Click on the "Send" button to make the request.
-Inspect the response to see if it was successful.
-b. Get Issue Detail API (GET /issues/:issue_id)
-Create a New Request:
+**Endpoint:** `POST /api/issues/sync`
 
-Click on the "New" button again to create a new request.
-Give your request a name, for example, "Get Issue Detail."
-Set Request Type and URL:
+This endpoint synchronizes GitHub issues from a specified repository with the local database.
 
-Set the request type to GET.
-Enter the URL for your get issue detail endpoint. For example: http://localhost:3000/issues/123 (replace 123 with an actual issue ID).
-Send Request:
+### Request
 
-Click on the "Send" button to make the request.
-Inspect the response to see if it provides the details of the specified issue.
-c. Update Issue Detail API (PUT /issues/:issue_id)
-Create a New Request:
 
-Click on the "New" button once again to create a new request.
-Give your request a name, for example, "Update Issue Detail."
-Set Request Type and URL:
+`POST /api/issues/sync`
 
-Set the request type to PUT.
-Enter the URL for your update issue detail endpoint. For example: http://localhost:3000/issues/123 (replace 123 with an actual issue ID).
-Body:
+```
+{
+  "success": true,
+  "message": "Sync completed successfully"
+}
+```
 
-If your update issue detail endpoint requires a request body, switch to the "Body" tab.
-Enter the necessary data according to your API specifications.
-Send Request:
 
-Click on the "Send" button to make the request.
-Inspect the response to see if the issue details were successfully updated. -->
+Certainly! Below is an example README file in Markdown format describing the available endpoints in your application. Please customize it based on your actual endpoints, features, and any additional details you want to include:
+
+markdown
+Copy code
+
+# GitHub Issues Sync API
+
+This API allows you to synchronize GitHub issues with a local database and perform operations on those issues.
+
+## Table of Contents
+
+- [Sync GitHub Issues](#sync-github-issues)
+- [Get Issue by ID](#get-issue-by-id)
+- [Update Issue](#update-issue)
+- [Get Paginated Issues](#get-paginated-issues)
+
+## Sync GitHub Issues
+
+**Endpoint:** `POST /api/issues/sync`
+
+This endpoint synchronizes GitHub issues from a specified repository with the local database.
+
+### Request
+
+`POST /api/issues/sync`
+
+### Get Issue by ID
+**Endpoint:** `GET /api/issues/:issue_id`
+
+This endpoint retrieves details of a specific GitHub issue by its ID from the local database.
+
+`GET /api/issues/123`
+
+### Update Issue ###
+**Endpoint:** `PUT /api/issues/:issue_id`
+
+This endpoint updates the details of a specific GitHub issue by its ID in both the local database and GitHub.
+
+
+`PUT /api/issues/123`
+
+Get Paginated Issues
+*** Endpoint: *** `GET /api/issues`
+
+This endpoint retrieves a paginated list of GitHub issues from the local database.
+
+
+`GET /api/issues?page=1&pageSize=10`

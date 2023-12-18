@@ -14,7 +14,7 @@ router.post("/sync", async (req, res) => {
       `https://api.github.com/repos/${repoOwner}/${repoName}/issues`,
       {
         headers: {
-          Authorization: "Bearer mytoken",
+          Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
         },
       }
     );
@@ -43,22 +43,29 @@ router.post("/sync", async (req, res) => {
   }
 });
 
-router.get("/:issue_id", async (req, res) => {
-  const issueId = req.params.issue_id;
-
+router.get("/", async (req, res) => {
   try {
-    const issue = await Issue.findOne({ id: issueId });
+    const page = req.query.page || 1;
+    const pageSize = req.query.pageSize || 10;
 
-    if (!issue) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Issue not found" });
-    }
+    const totalIssues = await Issue.countDocuments();
+    const totalPages = Math.ceil(totalIssues / pageSize);
 
-    res.json({ success: true, issue });
+    const issues = await Issue.find()
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
+
+    res.json({
+      success: true,
+      page,
+      pageSize,
+      totalPages,
+      totalIssues,
+      issues,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Error retrieving issue" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
 

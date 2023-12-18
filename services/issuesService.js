@@ -1,10 +1,7 @@
-const express = require("express");
 const axios = require("axios");
-const router = express.Router();
-const mongoose = require("mongoose");
-// ravindrapv/linkedin-clone
 const Issue = require("../models/Issue");
-router.post("/sync", async (req, res) => {
+
+async function syncIssuesWithLocalDB() {
   const repoOwner = "ravindrapv";
   const repoName = "linkedin-clone";
   const batchSize = 3;
@@ -28,7 +25,9 @@ router.post("/sync", async (req, res) => {
         const validatedIssue = new Issue(issue);
         await validatedIssue.validate();
 
-        await Issue.findOneAndUpdate({ id: issue.id }, issue, { upsert: true });
+        await Issue.findOneAndUpdate({ id: issue.id }, issue, {
+          upsert: true,
+        });
       });
 
       await Promise.all(promises);
@@ -36,36 +35,29 @@ router.post("/sync", async (req, res) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
-    res.json({ success: true, message: "Sync completed successfully" });
+    return { success: true, message: "Sync completed successfully" };
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Error syncing data" });
+    throw new Error("Error syncing data");
   }
-});
+}
 
-router.get("/:issue_id", async (req, res) => {
-  const issueId = req.params.issue_id;
-
+async function getIssueById(issueId) {
   try {
     const issue = await Issue.findOne({ id: issueId });
 
     if (!issue) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Issue not found" });
+      throw new Error("Issue not found");
     }
 
-    res.json({ success: true, issue });
+    return { success: true, issue };
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Error retrieving issue" });
+    throw new Error("Error retrieving issue");
   }
-});
+}
 
-router.put("/:issue_id", async (req, res) => {
-  const issueId = req.params.issue_id;
-  const updatedIssueDetails = req.body;
-
+async function updateIssueById(issueId, updatedIssueDetails) {
   try {
     const updatedIssue = await Issue.findOneAndUpdate(
       { id: issueId },
@@ -76,16 +68,18 @@ router.put("/:issue_id", async (req, res) => {
     );
 
     if (!updatedIssue) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Issue not found" });
+      throw new Error("Issue not found");
     }
 
-    res.json({ success: true, updatedIssue });
+    return { success: true, updatedIssue };
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Error updating issue" });
+    throw new Error("Error updating issue");
   }
-});
+}
 
-module.exports = router;
+module.exports = {
+  syncIssuesWithLocalDB,
+  getIssueById,
+  updateIssueById,
+};

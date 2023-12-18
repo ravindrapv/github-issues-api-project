@@ -7,14 +7,18 @@
   },
   "dependencies": {
     "axios": "^1.6.2",
+    "body-parser": "^1.20.2",
     "clerk": "^0.8.3",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^16.3.1",
     "express": "~4.16.1",
+    "helmet": "^7.1.0",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
+    "joi": "^17.11.0",
     "mongoose": "^8.0.3",
-    "morgan": "~1.9.1"
+    "morgan": "~1.9.1",
+    "pino": "^8.17.1"
   }
 }

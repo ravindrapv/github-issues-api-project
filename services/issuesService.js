@@ -6,6 +6,8 @@ async function syncIssuesWithLocalDB() {
   const repoName = "linkedin-clone";
   const batchSize = 3;
 
+  console.log("From middleware");
+
   try {
     const response = await axios.get(
       `https://api.github.com/repos/${repoOwner}/${repoName}/issues`,

@@ -1,50 +1,58 @@
 const express = require("express");
 const router = express.Router();
 const { validateRequest } = require("../../middlewares/validation");
-const verifyToken = require("../../middlewares/auth.js");
+const verifyTokenAndRole = require("../../middlewares/auth.js");
 
-console.log(verifyToken());
-const {
-  syncIssuesWithLocalDB,
-  getIssueById,
-  updateIssueById,
-} = require("../../services/issuesService");
+const IssueService = require("../../services/issuesService");
+const issueService = new IssueService();
 
 router.post(
   "/sync",
-  verifyToken(),
-
+  verifyTokenAndRole(["user", "admin"]),
   async (req, res, next) => {
     try {
       console.log(" from the route");
-      await syncIssuesWithLocalDB();
-      res.json({ success: true, message: "Sync completed successfully" });
+      const result = await issueService.syncIssuesWithLocalDB();
+      res.json(result);
     } catch (error) {
-      // next(error);
-      res.send({ error: error });
+      console.error(error);
+      res.status(500).json({ error: { message: error.message } });
     }
   }
 );
 
-router.get("/:issue_id", verifyToken(), async (req, res, next) => {
-  try {
-    const { issue_id } = req.params;
-    const issue = await getIssueById(issue_id);
-    res.json({ success: true, issue });
-  } catch (error) {
-    next(error);
+router.get(
+  "/:issue_id",
+  verifyTokenAndRole(["user", "admin"]),
+  async (req, res, next) => {
+    try {
+      const { issue_id } = req.params;
+      const issue = await issueService.getIssueById(issue_id);
+      res.json({ success: true, issue });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: { message: error.message } });
+    }
   }
-});
+);
 
-router.put("/:issue_id", verifyToken(), async (req, res, next) => {
-  try {
-    const { issue_id } = req.params;
-    const updatedIssueDetails = req.body;
-    const updatedIssue = await updateIssueById(issue_id, updatedIssueDetails);
-    res.json({ success: true, updatedIssue });
-  } catch (error) {
-    next(error);
+router.put(
+  "/:issue_id",
+  verifyTokenAndRole(["admin"]),
+  async (req, res, next) => {
+    try {
+      const { issue_id } = req.params;
+      const updatedIssueDetails = req.body;
+      const updatedIssue = await issueService.updateIssueById(
+        issue_id,
+        updatedIssueDetails
+      );
+      res.json({ success: true, updatedIssue });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: { message: error.message } });
+    }
   }
-});
+);
 
 module.exports = router;

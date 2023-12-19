@@ -3,12 +3,37 @@ const path = require("path");
 const logger = require("morgan");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-// const issuesRouter = require("./routes/issues");
+const passport = require("passport");
+const JwtStrategy = require("passport-jwt").Strategy;
+const ExtractJwt = require("passport-jwt").ExtractJwt;
+const User = require("./models/User");
+
 const issuesRoutes = require("./routes/api/issues");
 const authRoutes = require("./routes/api/auth");
 dotenv.config();
 
 const app = express();
+
+const jwtOptions = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: process.env.JWT_SECRET,
+};
+
+passport.use(
+  new JwtStrategy(jwtOptions, async (payload, done) => {
+    try {
+      const user = await User.findById(payload.userId);
+      if (!user) {
+        return done(null, false);
+      }
+      return done(null, user);
+    } catch (error) {
+      console.error("Error during authentication:", error);
+      return done(error, false);
+    }
+  })
+);
+app.use(passport.initialize());
 
 mongoose.connect("mongodb://localhost:27017/githubIssues-2", {
   useNewUrlParser: true,
@@ -25,7 +50,7 @@ app.use("/auth", authRoutes);
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {
-  pino.error(err);
+  console.error(err);
   res.status(500).json({ success: false, message: "Internal server error" });
 });
 
